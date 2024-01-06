@@ -52,3 +52,17 @@ fi
 if ask "Do you want to install nvim folder?"; then
 	ln -s "$(realpath "nvim")" ~/.config/nvim
 fi
+
+if ask "Do you want to install starship.toml?"; then
+	ln -s "$(realpath "starship.toml")" ~/.config/starship.toml
+fi
+
+if ask "Do you want to install alacritty.yml?"; then
+	mkdir -p ~/.config/alacritty
+	ln -s "$(realpath "alacritty.yml")" ~/.config/alacritty/alacritty.yml
+fi
+
+if ask "Do you want to install i3?"; then
+	mkdir -p ~/.config/i3
+	ln -s "$(realpath "i3")" ~/.config/i3/config
+fi
