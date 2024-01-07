@@ -2,7 +2,7 @@
 
 # Ask Y/n
 function ask() {
-	read -pr "$1 (Y/n): " resp
+	read -p "$1 (Y/n): " resp
 	if [ -z "$resp" ]; then
 		response_lc="y" # empty is Yes
 	else
@@ -45,6 +45,7 @@ echo '# -------------- SimonNyvall:dotfiles install ---------------' >>"$SH"
 
 # Tmux conf
 if ask "Do you want to install tmux.conf?"; then
+	mkdir -p ~/.config/tmux
 	ln -s "$(realpath "tmux.conf")" ~/.config/tmux/tmux.conf
 fi
 
@@ -53,16 +54,28 @@ if ask "Do you want to install nvim folder?"; then
 	ln -s "$(realpath "nvim")" ~/.config/nvim
 fi
 
+# starship
 if ask "Do you want to install starship.toml?"; then
 	ln -s "$(realpath "starship.toml")" ~/.config/starship.toml
 fi
 
+# alacritty
 if ask "Do you want to install alacritty.yml?"; then
 	mkdir -p ~/.config/alacritty
 	ln -s "$(realpath "alacritty.yml")" ~/.config/alacritty/alacritty.yml
 fi
 
+# i3
 if ask "Do you want to install i3?"; then
 	mkdir -p ~/.config/i3
 	ln -s "$(realpath "i3")" ~/.config/i3/config
+
+	unzip bumb.zip -d bumblebee-status
+fi
+
+# Session forge
+if ask "Do you want to install session forge? (You will need to have tmux installed)"; then
+	cd /bin || exit 1
+	git clone https://github.com/SimonNyvall/SessionForge.git
+	echo "sessionForge.sh" >>"$SH"
 fi
