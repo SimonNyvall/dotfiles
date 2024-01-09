@@ -1,4 +1,10 @@
+--return {
+--  "EdenEast/nightfox.nvim",
+--}
+
 return {
-  "EdenEast/nightfox.nvim",
-  lazy = false,
+  { "EdenEast/nightfox.nvim" },
+  { "LazyVim/LazyVim", opts = {
+    colorscheme = "terafox",
+  } },
 }
