@@ -3,7 +3,17 @@
 sudo apt update && sudo apt upgrade -y
 
 # Install neovim
-sudo apt install neovim -y
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+chmod u+x nvim.appimage
+./nvim.appimage
+
+./nvim.appimage --appimage-extract
+./squashfs-root/AppRun --version
+
+# Optional: exposing nvim globally.
+sudo mv squashfs-root /
+sudo ln -s /squashfs-root/AppRun /usr/bin/nvim
+nvim
 
 # Install i3
 wget -O- https://baltocdn.com/i3-window-manager/signing.asc | gpg --dearmor >/etc/apt/trusted.gpg.d/i3wm-signing.gpg
