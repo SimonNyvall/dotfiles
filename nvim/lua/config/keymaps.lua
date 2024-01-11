@@ -41,3 +41,7 @@ vim.keymap.set("n", "n", "nzzzv", { desc = "Next search" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search" })
 
 vim.keymap.set("n", "<leader>lg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
+
+-- Split right and split below the window should be the same as in tmux
+vim.keymap.set("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "Split right" })
+vim.keymap.set("n", '<leader>"', "<cmd>split<cr>", { desc = "Split below" })
