@@ -12,8 +12,6 @@ vim.keymap.set(
 )
 vim.api.nvim_set_keymap("i", "<C-l>", "copilot#Accept('<CR>')", { expr = true, silent = true })
 
-vim.keymap.set("n", "A-ä", "<cmd>FsiReset<cr>", { desc = "Reload fsi" })
-
 vim.keymap.set("n", "<leader>ld", "<cmd>TroubleToggle<cr>", { desc = "Open truble" })
 
 vim.keymap.set(
