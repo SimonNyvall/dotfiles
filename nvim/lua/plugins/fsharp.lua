@@ -1,3 +1,0 @@
-return {
-  "DrTom/fsharp-vim",
-}
