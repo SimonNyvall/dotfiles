@@ -43,3 +43,5 @@ vim.keymap.set("n", "<leader>lg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 -- Split right and split below the window should be the same as in tmux
 vim.keymap.set("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "Split right" })
 vim.keymap.set("n", '<leader>"', "<cmd>split<cr>", { desc = "Split below" })
+
+vim.keymap.set("n", "<F5>", "<cmd>edit!<cr>", { desc = "Reload buffer" })
