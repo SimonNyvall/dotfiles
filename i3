@@ -17,7 +17,7 @@ exec_always --no-startup-id xmodmap ~/.Xmodmap
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:Hack 16, PowerlineSymbols 16
+font pango:JetBrainsMono NF 16, PowerlineSymbols 16
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -55,7 +55,7 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run
+bindsym $mod+d exec --no-startup-id rofi -show drun -run-command "i3-msg exec '{cmd}'" -show-icons
 # A more modern dmenu replacement is rofi:
 # bindcode $mod+40 exec "rofi -modi drun,run -show drun"
 # There also is i3-dmenu-desktop which only displays applications shipping a
@@ -186,10 +186,9 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-  status_command ~/.dotfiles/bumblebee-status/bumblebee-status \
-  -t solarized-powerline \
-  -m pulseout pulsein network xrandr memory datetime hostname battery
- 
+    status_command i3status --config ~/.i3status.conf
+
+
   colors {
         background #192330
         statusline #ffffff
@@ -202,7 +201,7 @@ bar {
         binding_mode       #2f343a #dc322f #ffffff
   }
 
-  position top
+   separator_symbol "  :|:  "
 }
 
 for_window [class="^.*"] border pixel 5
@@ -213,12 +212,11 @@ gaps inner 5
 gaps outer 10
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #344e41 #344e41 #ffffff #344e41   #344e41
-client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
-client.unfocused        #333333 #222222 #888888 #292d2e   #222222
-client.urgent           #2f343a #900000 #ffffff #900000   #900000
-client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
-
+client.focused          #2e2e2e #344e41 #ffffff #344e41   #2e2e2e
+client.focused_inactive #2e2e2e #5f676a #ffffff #484e50   #2e2e2e
+client.unfocused        #2e2e2e #222222 #888888 #292d2e   #2e2e2e
+client.urgent           #2e2e2e #900000 #ffffff #900000   #2e2e2e
+client.placeholder      #2e2e2e #0c0c0c #ffffff #000000   #2e2e2e
 client.background       #ffffff
 
 # background
