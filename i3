@@ -114,16 +114,16 @@ bindsym $mod+a focus parent
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1: dev "
-set $ws2 "2: www 󰈹"
-set $ws3 "3: sys "
-set $ws4 "4: doc "
-set $ws5 "5: cht "
-set $ws6 "6: mus "
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
+set $ws1 "1 "
+set $ws2 "2 󰈹"
+set $ws3 "3 "
+set $ws4 "4 "
+set $ws5 "5 "
+#set $ws6 "6"
+#set $ws7 "7"
+#set $ws8 "8"
+#set $ws9 "9"
+#set $ws10 "10"
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -207,10 +207,10 @@ bar {
 
 for_window [class="^.*"] border pixel 5
 
-gaps inner 10
+gaps inner 5
 
 # Outer gaps for all windows: space along the screen edges.
-gaps outer 20
+gaps outer 10
 
 # class                 border  backgr. text    indicator child_border
 client.focused          #344e41 #344e41 #ffffff #344e41   #344e41

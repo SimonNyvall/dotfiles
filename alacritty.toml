@@ -1,3 +1,7 @@
+import = [
+    "~/.config/alacritty/themes/themes/kanagawa_wave.toml"
+]
+
 [font]
 size = 12.0
 
