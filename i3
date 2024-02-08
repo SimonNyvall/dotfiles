@@ -14,10 +14,11 @@ set $mod Mod4
 # set so that right ctrl works like the right alt key
 # this is needed for the swedish keyboard layout
 exec_always --no-startup-id xmodmap ~/.Xmodmap
+exec --no-startup-id xrdb -merge ~/.Xresources
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:JetBrainsMono NF 16, PowerlineSymbols 16
+font pango:JetBrainsMono Nerd Font 16, JetBrainsMono Nerd Font 16
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -26,6 +27,10 @@ font pango:JetBrainsMono NF 16, PowerlineSymbols 16
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
+
+# Polybar
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+
 
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
 # they are included here as an example. Modify as you see fit.
@@ -55,12 +60,13 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id rofi -show drun -run-command "i3-msg exec '{cmd}'" -show-icons
+#bindsym $mod+d exec --no-startup-id rofi -show drun -run-command "i3-msg exec '{cmd}'" -show-icons
+#bindsym $mod+d exec --no-startup-id $HOME/.config/polybar/hack/scripts/launcher.sh
 # A more modern dmenu replacement is rofi:
-# bindcode $mod+40 exec "rofi -modi drun,run -show drun"
+#bindcode $mod+40 exec "rofi -modi drun,run -show drun"
 # There also is i3-dmenu-desktop which only displays applications shipping a
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
-# bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
+bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
 
 # change focus
 bindsym $mod+j focus left
@@ -114,16 +120,11 @@ bindsym $mod+a focus parent
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1 "
-set $ws2 "2 󰈹"
-set $ws3 "3 "
-set $ws4 "4 "
-set $ws5 "5 "
-#set $ws6 "6"
-#set $ws7 "7"
-#set $ws8 "8"
-#set $ws9 "9"
-#set $ws10 "10"
+set $ws1 "    "
+set $ws2 "  󰈹  "
+set $ws3 "    "
+set $ws4 "    "
+set $ws5 "    "
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -187,7 +188,7 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
     status_command i3status --config ~/.i3status.conf
-
+#    i3bar_command i3bar
 
   colors {
         background #192330

@@ -69,8 +69,7 @@ fi
 if ask "Do you want to install i3?"; then
 	mkdir -p ~/.config/i3
 	ln -s "$(realpath "i3")" ~/.config/i3/config
-
-	unzip bumb.zip -d bumblebee-status
+	ln -s "$(realpath ".i3status")" ~/.i3status.conf
 fi
 
 # Session forge
