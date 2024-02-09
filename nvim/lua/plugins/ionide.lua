@@ -1,3 +1,3 @@
 return {
-  "ionide/Ionide-vim",
+  "SimonNyvall/fsharp-vim",
 }
