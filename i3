@@ -18,7 +18,7 @@ exec --no-startup-id xrdb -merge ~/.Xresources
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:JetBrainsMono Nerd Font 16, JetBrainsMono Nerd Font 16
+font pango:JetBrainsMono Nerd Font 13, JetBrainsMono Nerd Font 13
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -120,11 +120,11 @@ bindsym $mod+a focus parent
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "    "
-set $ws2 "  󰈹  "
-set $ws3 "    "
-set $ws4 "    "
-set $ws5 "    "
+set $ws1 "  1  "
+set $ws2 "  2  "
+set $ws3 "  3  "
+set $ws4 "  4  "
+set $ws5 "  5  "
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -205,7 +205,7 @@ bar {
    separator_symbol "  :|:  "
 }
 
-for_window [class="^.*"] border pixel 5
+#for_window [class="^.*"] border pixel 5
 
 gaps inner 5
 
@@ -213,12 +213,14 @@ gaps inner 5
 gaps outer 10
 
 # class                 border  backgr. text    indicator child_border
-client.focused          #2e2e2e #344e41 #ffffff #344e41   #2e2e2e
+client.focused          #4c7899 #192330 #ffffff #4c7899   #2e2e2e
 client.focused_inactive #2e2e2e #5f676a #ffffff #484e50   #2e2e2e
 client.unfocused        #2e2e2e #222222 #888888 #292d2e   #2e2e2e
 client.urgent           #2e2e2e #900000 #ffffff #900000   #2e2e2e
 client.placeholder      #2e2e2e #0c0c0c #ffffff #000000   #2e2e2e
 client.background       #ffffff
+
+title_align center
 
 # background
 exec --no-startup-id nitrogen --restore
