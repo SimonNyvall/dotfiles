@@ -59,6 +59,9 @@ bindsym $mod+Return exec i3-sensible-terminal
 # kill focused window
 bindsym $mod+Shift+q kill
 
+# sleep 
+bindsym $mod+L exec --no-startup-id i3lock-fancy
+
 # start dmenu (a program launcher)
 #bindsym $mod+d exec --no-startup-id rofi -show drun -run-command "i3-msg exec '{cmd}'" -show-icons
 #bindsym $mod+d exec --no-startup-id $HOME/.config/polybar/hack/scripts/launcher.sh

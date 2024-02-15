@@ -26,6 +26,8 @@ sudo apt update
 
 sudo apt install i3 -y
 
+sudo apt install i3lock-fancy -y
+
 # Install starship
 curl -sS https://starship.rs/install.sh | sh
 
