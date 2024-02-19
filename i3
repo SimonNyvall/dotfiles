@@ -60,7 +60,7 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # sleep 
-bindsym $mod+L exec --no-startup-id i3lock-fancy
+bindsym $mod+p exec --no-startup-id i3lock-fancy
 
 # start dmenu (a program launcher)
 #bindsym $mod+d exec --no-startup-id rofi -show drun -run-command "i3-msg exec '{cmd}'" -show-icons
