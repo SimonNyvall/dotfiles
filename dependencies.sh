@@ -51,3 +51,5 @@ sudo install lazygit /usr/local/bin
 echo 'Install the font at https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/JetBrainsMono.zip'
 
 sudo apt install rofi -y
+
+sudo apt install bat -y

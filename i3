@@ -15,7 +15,7 @@ set $mod Mod4
 # this is needed for the swedish keyboard layout
 exec_always --no-startup-id xmodmap ~/.Xmodmap
 exec --no-startup-id xrdb -merge ~/.Xresources
-
+exec --no-startup-id xset s off -dpms
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
 font pango:JetBrainsMono Nerd Font 13, JetBrainsMono Nerd Font 13
@@ -210,10 +210,10 @@ bar {
 
 #for_window [class="^.*"] border pixel 5
 
-gaps inner 5
+#gaps inner 5
 
 # Outer gaps for all windows: space along the screen edges.
-gaps outer 10
+#gaps outer 10
 
 # class                 border  backgr. text    indicator child_border
 client.focused          #4c7899 #192330 #ffffff #4c7899   #2e2e2e

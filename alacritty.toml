@@ -21,3 +21,5 @@ style = "Italic"
 family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
+[cursor]
+style = "UnderLine"
