@@ -52,3 +52,6 @@ echo 'Install the font at https://github.com/ryanoasis/nerd-fonts/releases/downl
 
 # Install catbat
 sudo apt install bat -y
+
+# Install zoxide
+sudo apt isntall zoxide -y
