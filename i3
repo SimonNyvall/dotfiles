@@ -11,6 +11,9 @@
 
 set $mod Mod4
 
+exec --no-startup-id xrandr --output eDP-1 --off
+exec --no-startup-id xrandr --output DP-1 --mode 3440x1440 --rate 59.97 --primary
+
 # set so that right ctrl works like the right alt key
 # this is needed for the swedish keyboard layout
 exec_always --no-startup-id xmodmap ~/.Xmodmap
