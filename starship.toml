@@ -10,7 +10,7 @@ style = "bold dimmed white"
 disabled = false
 
 [line_break]
-disabled = false
+disabled = true
 
 [aws]
 symbol = "  "
