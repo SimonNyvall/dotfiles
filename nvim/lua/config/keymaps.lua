@@ -45,3 +45,10 @@ vim.keymap.set("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "Split right" })
 vim.keymap.set("n", '<leader>"', "<cmd>split<cr>", { desc = "Split below" })
 
 vim.keymap.set("n", "<F5>", "<cmd>edit!<cr>", { desc = "Reload buffer" })
+
+vim.keymap.set(
+  "n",
+  "<leader>ff",
+  "<cmd>lua require('telescope.builtin').find_files({ cwd = vim.fn.getcwd(), file_ignore_patterns = {'node_modules', '%.dll$', '.cache', 'obj', 'bin'} })<cr>",
+  { desc = "Find file" }
+)
