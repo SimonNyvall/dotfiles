@@ -4,6 +4,7 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = "fsharp",
   callback = function()
     dap_text.disable()
+    vim.g["fsharp#backend"] = "disable"
   end,
 })
 
