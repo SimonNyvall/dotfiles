@@ -40,17 +40,3 @@ vim.keymap.set(
   "<cmd>lua require('telescope.builtin').find_files({ cwd = vim.fn.getcwd(), file_ignore_patterns = {'node_modules', '%.dll$', '.cache', 'obj', 'bin'} })<cr>",
   { desc = "Find file" }
 )
-
-vim.keymap.set(
-  "n",
-  "gpd",
-  "<cmd>lua require('goto-preview').goto_preview_definition()<CR>",
-  { desc = "Preview definition" }
-)
-vim.keymap.set("n", "gP", "<cmd>lua require('goto-preview').close_all_win()<CR>", { desc = "Close preview" })
-vim.keymap.set(
-  "n",
-  "gpr",
-  "<cmd>lua require('goto-preview').goto_preview_references()<CR>",
-  { desc = "Preview references" }
-)
