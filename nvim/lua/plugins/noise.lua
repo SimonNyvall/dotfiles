@@ -43,5 +43,8 @@ return {
         },
       },
     },
+    cmdline = {
+      view = "cmdline",
+    },
   },
 }
