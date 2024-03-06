@@ -45,6 +45,9 @@ return {
     },
     cmdline = {
       view = "cmdline",
+      format = {
+        cmdline = { pattern = "^:", icon = ":", lang = "vim" },
+      },
     },
   },
 }
