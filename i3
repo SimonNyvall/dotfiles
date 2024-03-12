@@ -16,12 +16,12 @@ exec --no-startup-id xrandr --output DP-1 --mode 3440x1440 --rate 59.97 --primar
 
 # set so that right ctrl works like the right alt key
 # this is needed for the swedish keyboard layout
-exec_always --no-startup-id xmodmap ~/.Xmodmap
+#exec_always --no-startup-id xmodmap ~/.Xmodmap
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id xset s off -dpms
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:JetBrainsMono Nerd Font 13, JetBrainsMono Nerd Font 13
+font pango:JetBrainsMono Nerd Font 10, JetBrainsMono Nerd Font 10
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
