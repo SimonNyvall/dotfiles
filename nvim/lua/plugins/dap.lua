@@ -1,12 +1,12 @@
 return {
   {
     "mfussenegger/nvim-dap",
-
     dependencies = {
 
       -- fancy UI for the debugger
       {
         "rcarriga/nvim-dap-ui",
+        dependencies = { "nvim-neotest/nvim-nio" },
       -- stylua: ignore
       keys = {
         { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
