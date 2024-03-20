@@ -42,3 +42,6 @@ vim.keymap.set(
 )
 
 vim.keymap.set("n", "<leader>r", "<cmd>lua vim.diagnostic.open_float()<cr>", { desc = "Open diagnostics" })
+
+vim.keymap.set("n", "mk", "ddkP", { desc = "Move line up" })
+vim.keymap.set("n", "mj", "ddp", { desc = "Move line down" })
