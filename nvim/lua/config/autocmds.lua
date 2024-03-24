@@ -24,7 +24,5 @@ vim.api.nvim_create_autocmd({ "FileType", "BufWritePost" }, {
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "cs",
-  callback = function()
-    dap_text.disable()
-  end,
+  callback = function() end,
 })
