@@ -55,3 +55,7 @@ sudo apt install bat -y
 
 # Install zoxide
 sudo apt isntall zoxide -y
+
+# Midnight commander
+sudo add-apt-repository universe
+sudo apt install mc -y

@@ -1,10 +1,14 @@
 [character]
-success_symbol = "[](bold #d8f3dc)"
-error_symbol = "[](bold #faa307) [|](#d00000) [](bold #d00000)"
+success_symbol = "[:](bold #d8f3dc)"
+error_symbol = "[](bold #faa307) [|](#d00000) [:](bold #d00000)"
+
+[[battery.display]]
+threshold = 20
+style = 'bold red'
 
 [hostname]
 ssh_only = false
-format = "[󰘧](bold #d8f3dc) "
+format = " "
 trim_at = "-"
 style = "bold dimmed white"
 disabled = false
