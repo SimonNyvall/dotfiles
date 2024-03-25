@@ -1,6 +1,6 @@
 alias gs='git status'
 alias gd='git diff'
-alias gl='git log'
+alias gl='git log --oneline --decorate --all --graph'
 alias gc='git checkout'
 alias gp='git push'
 alias gpl='git pull'
