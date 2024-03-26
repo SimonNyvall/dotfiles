@@ -162,7 +162,6 @@ return {
         "terraform-ls",
         "fsautocomplete",
       },
-      ignore_install = { "fsharp" },
     },
   },
 

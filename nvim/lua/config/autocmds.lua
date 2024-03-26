@@ -1,5 +1,3 @@
-local dap_text = require("nvim-dap-virtual-text")
-
 vim.api.nvim_create_autocmd({ "BufWinEnter", "FileType" }, {
   pattern = "*",
   callback = function()
@@ -7,18 +5,12 @@ vim.api.nvim_create_autocmd({ "BufWinEnter", "FileType" }, {
   end,
 })
 
+local dap_text = require("nvim-dap-virtual-text")
+
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "fsharp",
+  pattern = { "*.fs", "*.fsx", "*.fsi", "fsharp" },
   callback = function()
     dap_text.disable()
-  end,
-})
-
-vim.api.nvim_create_autocmd({ "FileType", "BufWritePost" }, {
-  pattern = "fsharp",
-  callback = function()
-    vim.g["fsharp#backend"] = "disable"
-    vim.g["fsharp#show_signature_on_cursor_move"] = 1
   end,
 })
 
