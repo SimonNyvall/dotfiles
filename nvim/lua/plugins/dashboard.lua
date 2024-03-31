@@ -64,8 +64,8 @@ return {
 ╚══════╝  ╚═════╝  ╚═╝  ╚═══╝ ╚═════╝  ╚═╝  ╚═╝   ╚═╝   
 ]],
       }
+      local logo = logos[(os.date("*t").wday - 2) % 7 + 1]
 
-      local logo = logos[tonumber(os.date("%w"))]
       logo = string.rep("\n", 8) .. logo .. "\n\n"
       vim.cmd("highlight DashboardHeader guifg=#ff9e64")
       local opts = {
