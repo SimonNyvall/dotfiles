@@ -1,6 +1,6 @@
 vim.api.nvim_set_keymap("i", "<C-l>", "copilot#Accept('<CR>')", { expr = true, silent = true })
 
-vim.keymap.set("n", "<leader>ld", "<cmd>TroubleToggle<cr>", { desc = "Open truble" })
+vim.keymap.set("n", "<leader>t", "<cmd>Trouble<cr>", { desc = "Open truble" })
 
 vim.keymap.set(
   "n",
