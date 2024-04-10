@@ -1,5 +1,7 @@
 #!/bin/bash
 
-git checkout -- nvim/lazy-lock.json
+git stash -u
 
 git pull
+
+git stash pop
