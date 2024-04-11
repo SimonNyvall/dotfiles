@@ -1,19 +1,4 @@
-vim.api.nvim_set_keymap("i", "<C-l>", "copilot#Accept('<CR>')", { expr = true, silent = true })
-
 vim.keymap.set("n", "<leader>t", "<cmd>Trouble<cr>", { desc = "Open truble" })
-
-vim.keymap.set(
-  "n",
-  "<leader>gw",
-  "<cmd>lua require('telescope').extensions.git_worktree.git_worktrees()<cr>",
-  { desc = "Open worktree" }
-)
-vim.keymap.set(
-  "n",
-  "<leader>gc",
-  "<cmd>lua require('telescope').extensions.git_worktree.create_git_worktree()<cr>",
-  { desc = "Create worktree" }
-)
 
 vim.keymap.set("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Window left" })
 vim.keymap.set("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Window right" })
@@ -25,8 +10,6 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Page up" })
 
 vim.keymap.set("n", "n", "nzzzv", { desc = "Next search" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search" })
-
-vim.keymap.set("n", "<leader>lg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 
 -- Split right and split below the window should be the same as in tmux
 vim.keymap.set("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "Split right" })
@@ -75,4 +58,8 @@ end, { desc = "Open harpoon window" })
 
 vim.keymap.set("n", "<leader>ha", function()
   harpoon:list():append()
+end)
+
+vim.keymap.set("n", "<leader>hd", function()
+  harpoon:list():remove()
 end)
