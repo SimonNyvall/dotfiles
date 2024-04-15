@@ -26,6 +26,9 @@ vim.keymap.set(
 
 vim.keymap.set("n", "<leader>r", "<cmd>lua vim.diagnostic.open_float()<cr>", { desc = "Open diagnostics" })
 
+-- Line break at cursor
+vim.keymap.set("n", "M", "i<cr><esc>", { desc = "Line break at cursor" })
+
 vim.keymap.set("n", "mk", "ddkP", { desc = "Move line up" })
 vim.keymap.set("n", "mj", "ddp", { desc = "Move line down" })
 
@@ -63,3 +66,15 @@ end)
 vim.keymap.set("n", "<leader>hd", function()
   harpoon:list():remove()
 end)
+
+-- CMP keymaps
+local cmp = require("cmp")
+local cmpConf = cmp:get_config()
+cmpConf.mapping = vim.tbl_deep_extend("force", cmpConf.mapping, {
+  ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+  ["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+  ["<C-y>"] = cmp.mapping.confirm({
+    behavior = cmp.ConfirmBehavior.Replace,
+    select = true,
+  }),
+})
