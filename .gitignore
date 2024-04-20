@@ -4,3 +4,4 @@ lazygit.tar.gz
 minikube-linux-amd64
 firefox
 nvim/pack
+nvim/lazy-lock.json
