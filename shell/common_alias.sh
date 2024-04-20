@@ -1,3 +1,10 @@
 alias cat='batcat'
 alias plz='sudo'
-alias nvim='nvim -c Ex'
+
+nvim() {
+    if [ $# -eq 0 ]; then
+        command nvim -c "Ex"
+    else
+        command nvim $1
+    fi
+}
