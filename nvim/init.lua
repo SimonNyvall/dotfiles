@@ -1,4 +1,5 @@
 ---@diagnostic disable: redefined-local
+---@diagnostic disable: undefined-global
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
 
@@ -9,6 +10,8 @@ vim.cmd("set expandtab")
 vim.cmd("set tabstop=4")
 vim.cmd("set softtabstop=4")
 vim.cmd("set shiftwidth=4")
+
+vim.g.netrw_banner = 0
 
 vim.fn.sign_define("DiagnosticSignError", {text = "", numhl = "DiagnosticError"})
 vim.fn.sign_define("DiagnosticSignWarn", {text = "", numhl = "DiagnosticWarn"})
@@ -134,7 +137,6 @@ config.setup({
         "fsautocomplete",
         "tsserver",
         "clangd",
-
     }
 })
 
@@ -208,20 +210,7 @@ cmp.setup({
 
 vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<C-l>", "copilot#Accept('<CR>')", { expr = true, silent = true })
-
-vim.g.copilot_filetypes = {
-    ["*"] = false,
-    ["javascript"] = true,
-    ["typescript"] = true,
-    ["lua"] = false,
-    ["rust"] = true,
-    ["c"] = true,
-    ["c#"] = true,
-    ["c++"] = true,
-    ["go"] = true,
-    ["python"] = true,
-    ["f#"] = true,
-}
+vim.g.copilot_enabled = 1
 
 local diff = require("mini.diff")
 diff.setup({
@@ -321,8 +310,47 @@ vim.keymap.set("n", "<leader>ds", function() require("dap").session() end)
 vim.keymap.set("n", "<leader>dt", function() require("dap").terminate() end)
 vim.keymap.set("n", "<leader>dw", function() require("dap.ui.widgets").hover() end)
 
+local function is_copilot_loaded()
+    return package.loaded["copilot"] ~= nil
+end
 
-require("lualine").setup()
+local function copilot_status()
+    if not is_copilot_loaded() then
+        return "  "
+    else
+        return "  "
+    end
+end
+
+local function copilot_color()
+    if not is_copilot_loaded() then
+        return { fg = "#d3d3d3" }  -- White is loaded
+    else
+        return { fg = "#ff0000" }  -- Red if not loaded
+    end
+end
+
+local function refresh_statusline()
+    vim.api.nvim_command('redrawstatus')
+end
+
+local function setup_periodic_refresh()
+    vim.defer_fn(function()
+        refresh_statusline()
+        setup_periodic_refresh()
+    end, 5000)
+end
+
+setup_periodic_refresh()
+
+require('lualine').setup({
+    sections = {
+        lualine_x = {
+            {'filename'},
+            {copilot_status, color = copilot_color},
+        }
+    }
+})
 
 require("nightfox").setup()
 vim.cmd.colorscheme "nightfox"
