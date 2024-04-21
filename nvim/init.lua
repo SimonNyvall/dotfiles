@@ -64,7 +64,6 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Set up plugins
 local plugins = {
-	{ "EdenEast/nightfox.nvim" },
 	{
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.6",
@@ -434,7 +433,7 @@ end
 
 local function copilot_color()
 	if not is_copilot_loaded() then
-		return { fg = "#d3d3d3" } -- White is loaded
+		return { fg = "#111111" } -- White is loaded
 	else
 		return { fg = "#ff0000" } -- Red if not loaded
 	end
@@ -471,8 +470,11 @@ end
 require("lualine").setup({
 	sections = {
 		lualine_x = {
-			{ lsp_client_names, color = { fg = "#d3d3d3", gui = "italic" } },
+			{ lsp_client_names, color = { fg = "#111111", gui = "italic" } },
 			{ copilot_status, color = copilot_color },
+		},
+		lualine_c = {
+			{ "filename", path = 1, color = { fg = "#111111" } },
 		},
 	},
 })
@@ -504,5 +506,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 
-require("nightfox").setup()
-vim.cmd.colorscheme("nightfox")
+-- Set up the theme
+vim.cmd("colorscheme habamax")
+vim.cmd("highlight ModeMsg ctermfg=10 guifg=#00ff00 guibg=NONE ctermbg=NONE")
