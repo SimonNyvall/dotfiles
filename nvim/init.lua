@@ -3,9 +3,23 @@
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
 
+vim.opt.clipboard:append("unnamedplus")
+
+-- Set line numbers and cursor line
 vim.o.relativenumber = true
 vim.o.cursorline = true
 
+-- Highlight on yank
+vim.api.nvim_create_augroup("YankHighlight", { clear = true })
+vim.api.nvim_create_autocmd("TextYankPost", {
+	group = "YankHighlight",
+	pattern = "*",
+	callback = function()
+		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
+	end,
+})
+
+-- Set tab width to 4 spaces
 vim.cmd("set expandtab")
 vim.cmd("set tabstop=4")
 vim.cmd("set softtabstop=4")
@@ -13,11 +27,13 @@ vim.cmd("set shiftwidth=4")
 
 vim.g.netrw_banner = 0
 
+-- Remove lsp diagnostics signs
 vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
 vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })
 vim.fn.sign_define("DiagnosticSignInfo", { text = "", numhl = "DiagnosticInfo" })
 vim.fn.sign_define("DiagnosticSignHint", { text = "", numhl = "DiagnosticHint" })
 
+-- Set up general keymaps
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Page down" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Page up" })
 
@@ -29,6 +45,10 @@ vim.keymap.set("n", '<leader>"', "<cmd>split<cr>", { desc = "Split below" })
 
 vim.keymap.set("n", "<leader>r", "<cmd>lua vim.diagnostic.open_float()<cr>", { desc = "Open diagnostics" })
 
+vim.keymap.set("n", "mk", "ddkP")
+vim.keymap.set("n", "mj", "ddp")
+
+-- Set up lazy package manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	vim.fn.system({
@@ -42,6 +62,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Set up plugins
 local plugins = {
 	{ "EdenEast/nightfox.nvim" },
 	{
@@ -51,6 +72,7 @@ local plugins = {
 	},
 	{
 		"nvim-telescope/telescope-ui-select.nvim",
+		dependencies = "nvim-lua/plenary.nvim",
 	},
 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 	{ "williamboman/mason.nvim" },
@@ -103,15 +125,20 @@ local plugins = {
 		"stevearc/conform.nvim",
 		event = "VeryLazy",
 	},
+	{
+		"ionide/Ionide-vim",
+	},
 }
 local opts = {}
 
 require("lazy").setup(plugins, opts)
 
+-- Set up telescope
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
 vim.keymap.set("n", "<leader>gg", builtin.live_grep, {})
 
+-- Set up treesitter
 local config = require("nvim-treesitter.configs")
 config.setup({
 	ensure_installed = { "lua", "javascript", "c_sharp", "typescript", "html", "bash", "markdown", "markdown_inline" },
@@ -119,6 +146,7 @@ config.setup({
 	indent = { enable = true },
 })
 
+-- Set up mason
 require("mason").setup({
 	ensure_installed = {
 		"htmlint",
@@ -134,6 +162,7 @@ require("mason").setup({
 	},
 })
 
+-- Set up mason-lspconfig
 local config = require("mason-lspconfig")
 config.setup({
 	ensure_installed = {
@@ -145,6 +174,7 @@ config.setup({
 	},
 })
 
+-- Set up mason-dap
 local masondap = require("mason-nvim-dap")
 masondap.setup({
 	ensure_installed = {
@@ -153,6 +183,7 @@ masondap.setup({
 	},
 })
 
+-- Set up LSP
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -205,8 +236,10 @@ vim.keymap.set("n", "gD", vim.lsp.buf.declaration, {})
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
 vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
 vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, {})
-vim.keymap.set("n", "gr", vim.lsp.buf.references, {})
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
+vim.keymap.set("n", "gr", function()
+	require("telescope.builtin").lsp_references()
+end, { noremap = true, silent = true })
 
 local config = require("telescope")
 config.setup({
@@ -219,6 +252,7 @@ config.setup({
 
 require("telescope").load_extension("ui-select")
 
+-- Set up cmp
 local cmp = require("cmp")
 cmp.setup({
 	snippet = {
@@ -241,10 +275,12 @@ cmp.setup({
 	}),
 })
 
+-- Set up copilot
 vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<C-l>", "copilot#Accept('<CR>')", { expr = true, silent = true })
 vim.g.copilot_enabled = 1
 
+-- Set up diff for git
 local diff = require("mini.diff")
 diff.setup({
 	view = {
@@ -257,11 +293,13 @@ diff.setup({
 	},
 })
 
+-- Set up tmux navigator
 vim.keymap.set("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Window left" })
 vim.keymap.set("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Window right" })
 vim.keymap.set("n", "<C-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Window down" })
 vim.keymap.set("n", "<C-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Window up" })
 
+-- Set up harpoon2
 local harpoon = require("harpoon")
 harpoon:setup({})
 
@@ -316,8 +354,10 @@ trouble.setup({
 	},
 })
 
+-- Set up trouble
 vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<cr>")
 
+-- Set up dap
 require("dapui").setup()
 
 vim.keymap.set("n", "<leader>du", function()
@@ -379,6 +419,7 @@ vim.keymap.set("n", "<leader>dw", function()
 	require("dap.ui.widgets").hover()
 end)
 
+-- Copilot status and Lualine setup
 local function is_copilot_loaded()
 	return package.loaded["copilot"] ~= nil
 end
@@ -412,15 +453,31 @@ end
 
 setup_periodic_refresh()
 
+local function lsp_client_names()
+	local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+	if next(clients) == nil then
+		return "󰒏 "
+	end -- Show 'No LSP' if no clients are attached
+
+	local client_names = {}
+	for _, client in pairs(clients) do
+		if string.lower(client.name) ~= "github copilot" then
+			table.insert(client_names, client.name)
+		end
+	end
+	return table.concat(client_names, ", ")
+end
+
 require("lualine").setup({
 	sections = {
 		lualine_x = {
-			{ "filename" },
+			{ lsp_client_names, color = { fg = "#d3d3d3", gui = "italic" } },
 			{ copilot_status, color = copilot_color },
 		},
 	},
 })
 
+-- Formatting on save
 local conform = require("conform")
 conform.setup({
 	formatters_by_ft = {
