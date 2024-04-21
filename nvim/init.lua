@@ -5,6 +5,8 @@ vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
 
 vim.opt.clipboard:append("unnamedplus")
 
+vim.cmd([[highlight MatchParen cterm=none guibg=none guifg=none ctermbg=none ctermfg=none]])
+
 -- Set line numbers and cursor line
 vim.o.relativenumber = true
 vim.o.cursorline = true
