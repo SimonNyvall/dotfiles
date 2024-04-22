@@ -108,10 +108,6 @@ local plugins = {
 		"christoomey/vim-tmux-navigator",
 	},
 	{
-		"folke/trouble.nvim",
-		branch = "dev",
-	},
-	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
 		dependencies = {
@@ -136,7 +132,7 @@ require("lazy").setup(plugins, opts)
 
 -- Set up telescope
 local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
+vim.keymap.set("n", "<leader>f", builtin.find_files, {})
 vim.keymap.set("n", "<leader>gg", builtin.live_grep, {})
 
 -- Set up treesitter
@@ -354,9 +350,6 @@ trouble.setup({
 		},
 	},
 })
-
--- Set up trouble
-vim.keymap.set("n", "<leader>t", "<cmd>Trouble diagnostics toggle<cr>")
 
 -- Set up dap
 require("dapui").setup()
