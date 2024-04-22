@@ -331,26 +331,6 @@ vim.keymap.set("n", "<leader>hd", function()
 	harpoon:list():remove()
 end)
 
-local trouble = require("trouble")
-trouble.setup({
-	modes = {
-		mydiags = {
-			mode = "diagnostics",
-			filter = {
-				any = {
-					buf = 0,
-					{
-						severity = vim.diagnostic.severity.ERROR,
-						function(item)
-							return item.filename:find(vim.loop.cwd(), 1, true)
-						end,
-					},
-				},
-			},
-		},
-	},
-})
-
 -- Set up dap
 require("dapui").setup()
 
