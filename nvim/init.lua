@@ -30,10 +30,10 @@ vim.cmd("set shiftwidth=4")
 vim.g.netrw_banner = 0
 
 -- Remove lsp diagnostics signs
-vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
-vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })
-vim.fn.sign_define("DiagnosticSignInfo", { text = "", numhl = "DiagnosticInfo" })
-vim.fn.sign_define("DiagnosticSignHint", { text = "", numhl = "DiagnosticHint" })
+vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
+vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })
+vim.fn.sign_define("DiagnosticSignInfo", { text = "", numhl = "DiagnosticInfo" })
+vim.fn.sign_define("DiagnosticSignHint", { text = "", numhl = "DiagnosticHint" })
 
 -- Set up general keymaps
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Page down" })
@@ -165,7 +165,6 @@ config.setup({
 	ensure_installed = {
 		"lua_ls",
 		"omnisharp",
-		"fsautocomplete",
 		"tsserver",
 		"clangd",
 	},
@@ -205,17 +204,6 @@ lspconfig.omnisharp.setup({
 		omnisharp = {
 			enableRoslynAnalyzers = true,
 			organizeImports = true,
-		},
-	},
-})
-
-lspconfig.fsautocomplete.setup({
-	capabilities = capabilities,
-	settings = {
-		fsautocomplete = {
-			formattingOptions = {
-				enableEditorConfigSupport = true,
-			},
 		},
 	},
 })
