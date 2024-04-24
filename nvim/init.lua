@@ -82,6 +82,8 @@ local plugins = {
 	},
 	{
 		"jay-babu/mason-nvim-dap.nvim",
+		dependencies = "mason.nvim",
+		cmd = { "DapInstall", "DapUninstall" },
 	},
 	{ "neovim/nvim-lspconfig" },
 	{
@@ -115,8 +117,8 @@ local plugins = {
 		},
 	},
 	{
-		"rcarriga/nvim-dap-ui",
-		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+		"mfussenegger/nvim-dap",
+		dependencies = { "rcarriga/nvim-dap-ui", dependencies = "nvim-neotest/nvim-nio" },
 	},
 	{
 		"stevearc/conform.nvim",
@@ -125,6 +127,7 @@ local plugins = {
 	{
 		"ionide/Ionide-vim",
 	},
+	{ "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
 }
 local opts = {}
 
@@ -185,36 +188,21 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 lspconfig.lua_ls.setup({
 	capabilities = capabilities,
-	-- stylua formatter on save
-	settings = {
-		Lua = {
-			format = {
-				enable = true,
-				formatter = "stylua",
-				args = { "-" },
-				save = true,
-			},
-		},
-	},
 })
 
 lspconfig.omnisharp.setup({
 	capabilities = capabilities,
 	settings = {
 		omnisharp = {
-			enableRoslynAnalyzers = true,
-			organizeImports = true,
+			enable_roslyn_analyzers = true,
+			organize_imports_on_format = true,
+			enable_import_completion = true,
 		},
 	},
 })
 
 lspconfig.tsserver.setup({
 	capabilities = capabilities,
-	settings = {
-		formattingOptions = {
-			enableEditorConfigSupport = true,
-		},
-	},
 })
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, {})
@@ -319,67 +307,111 @@ vim.keymap.set("n", "<leader>hd", function()
 	harpoon:list():remove()
 end)
 
--- Set up dap
-require("dapui").setup()
+-- Set up dap and dapui
+local dap = require("dap")
+local dapui = require("dapui")
+
+dapui.setup(opts)
+dap.listeners.after.event_initialized["dapui_config"] = function()
+	dapui.open({})
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+	dapui.close({})
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+	dapui.close({})
+end
+
+dap.adapters.coreclr = {
+	type = "executable",
+	command = vim.fn.exepath("netcoredbg"),
+	args = { "--interpreter=vscode" },
+}
+
+if not dap.adapters["netcoredbg"] then
+	dap.adapters["netcoredbg"] = {
+		type = "executable",
+		command = vim.fn.exepath("netcoredbg"),
+		args = { "--interpreter=vscode" },
+	}
+end
+
+-- Define configurations for C#, F#, and VB
+local languages = { "cs", "fsharp", "vb" }
+for _, lang in ipairs(languages) do
+	if not dap.configurations[lang] then
+		dap.configurations[lang] = {
+			{
+				type = "netcoredbg",
+				name = "Launch " .. lang:upper(),
+				request = "launch",
+				program = function()
+					return vim.fn.input("Path to " .. lang:upper() .. " dll: ", vim.fn.getcwd() .. "/", "file")
+				end,
+				cwd = "${workspaceFolder}",
+			},
+		}
+	end
+end
 
 vim.keymap.set("n", "<leader>du", function()
-	require("dapui").toggle({})
+	dapui.toggle({})
 end)
 vim.keymap.set("n", "<leader>de", function()
-	require("dapui").eval()
+	dapui.eval()
 end)
 
 vim.keymap.set("n", "<leader>dB", function()
-	require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 end)
-vim.keymap.set("n", "<leader>db", function()
-	require("dap").toggle_breakpoint()
-end)
+vim.keymap.set("n", "<leader>db", require("dap").toggle_breakpoint)
 vim.keymap.set("n", "<leader>dc", function()
-	require("dap").continue()
+	dap.continue()
 end)
 vim.keymap.set("n", "<leader>da", function()
-	require("dap").continue({ before = get_args })
+	dap.continue({ before = get_args })
 end)
 vim.keymap.set("n", "<leader>dC", function()
-	require("dap").run_to_cursor()
+	dap.run_to_cursor()
 end)
 vim.keymap.set("n", "<leader>dg", function()
-	require("dap").goto_()
+	dap.goto_()
 end)
 vim.keymap.set("n", "<leader>di", function()
-	require("dap").step_into()
+	dap.step_into()
 end)
 vim.keymap.set("n", "<leader>dj", function()
-	require("dap").down()
+	dap.down()
 end)
 vim.keymap.set("n", "<leader>dk", function()
-	require("dap").up()
+	dap.up()
 end)
 vim.keymap.set("n", "<leader>dl", function()
-	require("dap").run_last()
+	dap.run_last()
 end)
 vim.keymap.set("n", "<leader>do", function()
-	require("dap").run_last()
+	dap.run_last()
 end)
 vim.keymap.set("n", "<leader>dO", function()
-	require("dap").step_over()
+	dap.step_over()
 end)
 vim.keymap.set("n", "<leader>dp", function()
-	require("dap").pause()
+	dap.pause()
 end)
 vim.keymap.set("n", "<leader>dr", function()
-	require("dap").repl.toggle()
+	dap.repl.toggle()
 end)
 vim.keymap.set("n", "<leader>ds", function()
-	require("dap").session()
+	dap.session()
 end)
 vim.keymap.set("n", "<leader>dt", function()
-	require("dap").terminate()
+	dap.terminate()
 end)
 vim.keymap.set("n", "<leader>dw", function()
 	require("dap.ui.widgets").hover()
 end)
+
+dapui.setup()
 
 -- Copilot status and Lualine setup
 local function is_copilot_loaded()
