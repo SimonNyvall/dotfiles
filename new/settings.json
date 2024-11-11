@@ -1,0 +1,99 @@
+{
+    "workbench.startupEditor": "none",
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter-notebook"
+    },
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    },
+    "explorer.confirmDelete": false,
+    "editor.inlineSuggest.enabled": true,
+    "dotnet.autoDetect": "off",
+    "git.autofetch": true,
+    "dotnetAcquisitionExtension.existingDotnetPath": [],
+    "dotnet.preferRuntimeFromSDK": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false
+    },
+    "azureFunctions.showProjectWarning": false,
+    "vim.highlightedyank.enable": true,
+    "vim.leader": " ",
+    "git.openRepositoryInParentFolders": "never",
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
+    },
+    "explorer.confirmDragAndDrop": false,
+    "editor.lineNumbers": "relative",
+    "vim.hlsearch": true,
+    "vim.useSystemClipboard": true,
+    "vim.normalModeKeyBindings": [
+        {
+            "before": ["K"],
+            "commands":["editor.action.showHover"],
+        },
+        {
+            "before":["leader", "c", "a"],
+            "commands":["editor.action.quickFix"]
+        },
+        {
+            // go to references gr
+            "before":["g", "r"],
+            "commands":["editor.action.referenceSearch.trigger"]
+        },
+        {
+            // split the window on the right side
+            "before":["leader", "%"],
+            "commands":["workbench.action.splitEditorRight"]
+        },
+        {
+            // open all the buffers
+            "before":["leader", ","],
+            "commands": ["workbench.action.showAllEditors"]
+        },
+        {
+            // "leader+c+r" should rename the a variable like F2 does
+            "before":["leader", "c", "r"],
+            "commands": ["editor.action.rename"]
+        },
+        ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": ["<C-d>"],
+            "after": ["<C-d>", "zz"]
+        },
+        {
+            "before": ["<C-u>"],
+            "after": ["<C-u>", "zz"]
+        },
+        {
+            "before": ["n"],
+            "after": ["n", "zz", "zv"]
+        },
+        {
+            "before": ["N"],
+            "after": ["N", "zz", "zv"]
+        }
+    ],
+    "window.customTitleBarVisibility": "auto",
+    "window.titleBarStyle": "custom",
+    "vscode_custom_css.imports": [
+        "file:///home/sn/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.3/dist/updateHandler.js"
+    ],
+    "git.confirmSync": false,
+    "editor.scrollbar.vertical": "hidden",
+    "editor.fontFamily": "'JetBrainsMono NF'",
+    "animations.Install-Method": "Apc Customize UI++",
+    "apc.imports": [
+        "file://${userHome}/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.3/dist/updateHandler.js"
+    ],
+    "[csharp]": {
+        "editor.defaultFormatter": "ms-dotnettools.csharp"
+    },
+    "FSharp.showExplorerOnStartup": false,
+    "dotnet.testWindow.useTestingPlatformProtocol": true,
+    "extensions.ignoreRecommendations": true
+}
