@@ -40,6 +40,10 @@ function gd {
     git diff
 }
 
+function gt {
+    git commit -am "$($args -join ' ')"
+}
+
 function prompt {
     $cwd = (Get-Location).ProviderPath
     $home2 = [Environment]::GetFolderPath('UserProfile')

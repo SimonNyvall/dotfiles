@@ -1,8 +1,12 @@
 // Place your key bindings in this file to override the defaults
 [
     {
-        "key": "ctrl+p",
+        "key": "ctrl+f",
         "command": "workbench.action.quickOpen"
+    },
+    {
+        "key": "ctrl+p",
+        "command": "-workbench.action.quickOpen"
     },
     {
         "key": "ctrl+j",
@@ -53,7 +57,7 @@
         "command": "workbench.action.terminal.toggleTerminal"
     },
     {
-        "key": "ctrl+f",
+        "key": "ctrl+r",
         "command": "editor.action.startFindReplaceAction"
     },
     {
