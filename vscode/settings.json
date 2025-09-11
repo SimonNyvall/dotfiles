@@ -1,12 +1,5 @@
 {
     "workbench.startupEditor": "none",
-    "workbench.editorAssociations": {
-        "*.ipynb": "jupyter-notebook"
-    },
-    "notebook.cellToolbarLocation": {
-        "default": "right",
-        "jupyter-notebook": "left"
-    },
     "explorer.confirmDelete": false,
     "editor.inlineSuggest.enabled": true,
     "dotnet.autoDetect": "off",
@@ -80,16 +73,10 @@
     ],
     "window.customTitleBarVisibility": "auto",
     "window.titleBarStyle": "custom",
-    "vscode_custom_css.imports": [
-        "file:///home/sn/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.3/dist/updateHandler.js"
-    ],
     "git.confirmSync": false,
     "editor.scrollbar.vertical": "hidden",
     "editor.fontFamily": "'JetBrainsMono NF'",
     "animations.Install-Method": "Apc Customize UI++",
-    "apc.imports": [
-        "file://${userHome}/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.3/dist/updateHandler.js"
-    ],
     "[csharp]": {
         "editor.defaultFormatter": "ms-dotnettools.csharp"
     },
