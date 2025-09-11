@@ -41,7 +41,8 @@ function gd {
 }
 
 function gt {
-    git commit -am "$($args -join ' ')"
+    git add .
+    git commit -m "$($args -join ' ')"
 }
 
 function prompt {
