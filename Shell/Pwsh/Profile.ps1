@@ -45,6 +45,12 @@ function gt {
     git commit -m "$($args -join ' ')"
 }
 
+function Get-Guid {
+    $guid = [System.Guid]::NewGuid().ToString()
+    $guid | Set-Clipboard
+    Write-Host "Generated GUID: $guid (copied to clipboard)"
+}
+
 function prompt {
     $cwd = (Get-Location).ProviderPath
     $home2 = [Environment]::GetFolderPath('UserProfile')
