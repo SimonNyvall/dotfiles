@@ -13,6 +13,8 @@
     "git.autofetch": true,
     "dotnetAcquisitionExtension.existingDotnetPath": [],
     "dotnet.preferRuntimeFromSDK": true,
+    "vim.statusBarColorControl": true,
+    "editor.minimap.renderCharacters": false,
     "github.copilot.enable": {
         "*": true,
         "plaintext": false,
@@ -32,68 +34,145 @@
     "vim.useSystemClipboard": true,
     "vim.normalModeKeyBindings": [
         {
-            "before": ["K"],
-            "commands":["editor.action.showHover"],
+            "before": [
+                "K"
+            ],
+            "commands": [
+                "editor.action.showHover"
+            ],
         },
         {
-            "before":["leader", "c", "a"],
-            "commands":["editor.action.quickFix"]
+            "before": [
+                "leader",
+                "c",
+                "a"
+            ],
+            "commands": [
+                "editor.action.quickFix"
+            ]
+        },
+        {
+            "before": [
+                "leader",
+                "r",
+                "r"
+            ],
+            "commands": [
+                "editor.action.rename"
+            ]
+        },
+        {
+            "before": [
+                "leader",
+                "v"
+            ],
+            "commands": [
+                ":vsplit"
+            ]
+        },
+        {
+            "before": [
+                "leader",
+                "s"
+            ],
+            "commands": [
+                ":split"
+            ]
         },
         {
             // go to references gr
-            "before":["g", "r"],
-            "commands":["editor.action.referenceSearch.trigger"]
+            "before": [
+                "g",
+                "r"
+            ],
+            "commands": [
+                "editor.action.referenceSearch.trigger"
+            ]
         },
         {
             // split the window on the right side
-            "before":["leader", "%"],
-            "commands":["workbench.action.splitEditorRight"]
+            "before": [
+                "leader",
+                "%"
+            ],
+            "commands": [
+                "workbench.action.splitEditorRight"
+            ]
         },
         {
             // open all the buffers
-            "before":["leader", ","],
-            "commands": ["workbench.action.showAllEditors"]
+            "before": [
+                "leader",
+                ","
+            ],
+            "commands": [
+                "workbench.action.showAllEditors"
+            ]
         },
         {
             // "leader+c+r" should rename the a variable like F2 does
-            "before":["leader", "c", "r"],
-            "commands": ["editor.action.rename"]
+            "before": [
+                "leader",
+                "c",
+                "r"
+            ],
+            "commands": [
+                "editor.action.rename"
+            ]
         },
-        ],
+    ],
     "vim.normalModeKeyBindingsNonRecursive": [
         {
-            "before": ["<C-d>"],
-            "after": ["<C-d>", "zz"]
+            "before": [
+                "<C-d>"
+            ],
+            "after": [
+                "<C-d>",
+                "zz"
+            ]
         },
         {
-            "before": ["<C-u>"],
-            "after": ["<C-u>", "zz"]
+            "before": [
+                "<C-u>"
+            ],
+            "after": [
+                "<C-u>",
+                "zz"
+            ]
         },
         {
-            "before": ["n"],
-            "after": ["n", "zz", "zv"]
+            "before": [
+                "n"
+            ],
+            "after": [
+                "n",
+                "zz",
+                "zv"
+            ]
         },
         {
-            "before": ["N"],
-            "after": ["N", "zz", "zv"]
+            "before": [
+                "N"
+            ],
+            "after": [
+                "N",
+                "zz",
+                "zv"
+            ]
         }
     ],
     "window.customTitleBarVisibility": "auto",
+    "files.autoSave": "afterDelay",
     "window.titleBarStyle": "custom",
-    "vscode_custom_css.imports": [
-        "file:///home/sn/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.3/dist/updateHandler.js"
-    ],
     "git.confirmSync": false,
     "editor.scrollbar.vertical": "hidden",
     "editor.fontFamily": "'JetBrainsMono NF'",
     "animations.Install-Method": "Apc Customize UI++",
-    "apc.imports": [
-        "file://${userHome}/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.3/dist/updateHandler.js"
-    ],
     "[csharp]": {
         "editor.defaultFormatter": "ms-dotnettools.csharp"
     },
     "FSharp.showExplorerOnStartup": false,
+    "workbench.editor.showTabs": "none",
     "dotnet.testWindow.useTestingPlatformProtocol": true,
     "extensions.ignoreRecommendations": true
 }

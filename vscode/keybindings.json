@@ -1,17 +1,30 @@
 // Place your key bindings in this file to override the defaults
 [
     {
-        "key": "ctrl+f",
+        "key": "ctrl+p",
         "command": "workbench.action.quickOpen"
     },
     {
-        "key": "ctrl+p",
-        "command": "-workbench.action.quickOpen"
+        "key": "ctrl+f",
+        "command": "actions.find"
     },
     {
         "key": "ctrl+j",
         "command": "workbench.action.navigateDown",
         "when": "vim.mode != 'Insert'"
+    },
+    {
+        "key": "ctrl+a",
+        "command": "workbench.action.chat.toggle",
+        "when": "vim.mode != 'Insert'"
+    },
+    {
+        "key": "ctrl+shift+f",
+        "command": "editor.action.formatDocument"
+    },
+    {
+        "key": "ctrl+shift+t",
+        "command": "workbench.action.terminal.new"
     },
     {
         "key": "ctrl+k",
@@ -59,9 +72,5 @@
     {
         "key": "ctrl+r",
         "command": "editor.action.startFindReplaceAction"
-    },
-    {
-        "key": "ctrl+i",
-        "command": "editor.action.formatDocument",
     }
 ]
