@@ -9,7 +9,12 @@ vim.cmd([[highlight MatchParen cterm=none guibg=none guifg=none ctermbg=none cte
 
 -- Set line numbers and cursor line
 vim.o.relativenumber = true
+vim.opt.number = true
 vim.o.cursorline = true
+
+-- Set up the theme
+vim.cmd("colorscheme habamax")
+vim.cmd("highlight ModeMsg ctermfg=10 guifg=#00ff00 guibg=NONE ctermbg=NONE")
 
 -- Highlight on yank
 vim.api.nvim_create_augroup("YankHighlight", { clear = true })
@@ -29,11 +34,15 @@ vim.cmd("set shiftwidth=4")
 
 vim.g.netrw_banner = 0
 
--- Remove lsp diagnostics signs
-vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
-vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })
-vim.fn.sign_define("DiagnosticSignInfo", { text = "", numhl = "DiagnosticInfo" })
-vim.fn.sign_define("DiagnosticSignHint", { text = "", numhl = "DiagnosticHint" })
+vim.diagnostic.config({
+    virtual_text = {
+        spacing = 4,
+        prefix = ""
+    },
+    update_in_insert = true,
+    signs = false,
+    underline = true
+})
 
 -- Set up general keymaps
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Page down" })
@@ -49,6 +58,14 @@ vim.keymap.set("n", "<leader>r", "<cmd>lua vim.diagnostic.open_float()<cr>", { d
 
 vim.keymap.set("n", "mk", "ddkP")
 vim.keymap.set("n", "mj", "ddp")
+
+-- Set up whitespace render
+vim.opt.list = true
+vim.opt.listchars = {
+    lead = "·",
+    tab = "→ ",
+    trail = " ",
+}
 
 -- Set up lazy package manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -132,11 +149,40 @@ local plugins = {
     {
         "ionide/Ionide-vim",
     },
-    { "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
+    {
+        "echasnovski/mini.map",
+    },
 }
-local opts = {}
 
 require("lazy").setup(plugins, opts)
+
+-- Minimap
+local minimap = require("mini.map")
+
+minimap.setup({
+    integrations = {
+        minimap.gen_integration.diff(),
+        minimap.gen_integration.builtin_search(),
+        minimap.gen_integration.gitsigns(),
+        minimap.gen_integration.diagnostic(),
+    },
+    symbols = {
+        encode = minimap.gen_encode_symbols.dot("4x2"),
+    },
+    window = {
+        side = "right",
+        width = 10,
+        winblend = 15,
+        show_integration_count = false,
+    },
+})
+
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        minimap.open()
+    end,
+})
 
 -- Treesitter
 require("nvim-treesitter").install({
@@ -158,8 +204,13 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- Set up telescope
 local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>f", builtin.find_files, {})
-vim.keymap.set("n", "<leader>gg", builtin.live_grep, {})
+vim.keymap.set("n", "<leader>f", function()
+    builtin.find_files({
+        hidden = false,
+        no_ignore = false,
+    })
+end, { desc = "Find files" })
+vim.keymap.set("n", "<leader>g", builtin.live_grep, {})
 
 -- Set up mason
 require("mason").setup();
@@ -168,7 +219,7 @@ require("mason-lspconfig").setup({
     ensure_installed = {
         "lua_ls",
         "clangd",
-        "omnisharp",
+        "roslyn_ls",
         "ts_ls",
     },
 })
@@ -203,18 +254,6 @@ vim.lsp.config("clangd", {
     capabilities = capabilities,
 })
 
--- C#
-vim.lsp.config("omnisharp", {
-    capabilities = capabilities,
-    settings = {
-        omnisharp = {
-            enable_roslyn_analyzers = true,
-            organize_imports_on_format = true,
-            enable_import_completion = true,
-        },
-    },
-})
-
 -- JavaScript / TypeScript
 vim.lsp.config("ts_ls", {
     capabilities = capabilities,
@@ -224,7 +263,7 @@ vim.lsp.config("ts_ls", {
 vim.lsp.enable({
     "lua_ls",
     "clangd",
-    "omnisharp",
+    "roslyn_ls",
     "ts_ls",
 })
 
@@ -235,6 +274,18 @@ masondap.setup({
         "netcoredbg",
         "bash-debug-adapter",
     },
+})
+
+
+vim.api.nvim_set_hl(0, "DapBreakpointRed", {
+    fg = "#8B0000",
+})
+
+vim.fn.sign_define("DapBreakpoint", {
+    text = "●",
+    texthl = "DapBreakpointRed",
+    linehl = "",
+    numhl = "",
 })
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, {})
@@ -336,14 +387,33 @@ vim.keymap.set("n", "<leader>ha", function()
 end)
 
 vim.keymap.set("n", "<leader>hd", function()
-    harpoon:list():remove()
-end)
+    harpoon:list():clear()
+end, { desc = "Clear harpoon" })
 
 -- Set up dap and dapui
 local dap = require("dap")
 local dapui = require("dapui")
 
-dapui.setup(opts)
+local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
+
+-- Add Mason executables to PATH
+vim.env.PATH = mason_bin .. (vim.fn.has("win32") == 1 and ";" or ":") .. vim.env.PATH
+
+local netcoredbg = vim.fn.exepath("netcoredbg")
+
+if netcoredbg == "" then
+    vim.notify("netcoredbg not found. Install it with :MasonInstall netcoredbg", vim.log.levels.ERROR)
+else
+    dap.adapters.coreclr = {
+        type = "executable",
+        command = vim.fn.exepath("netcoredbg"),
+        args = { "--interpreter=vscode" },
+        options = {
+            detached = false,
+        },
+    }
+end
+
 dap.listeners.after.event_initialized["dapui_config"] = function()
     dapui.open({})
 end
@@ -354,18 +424,74 @@ dap.listeners.before.event_exited["dapui_config"] = function()
     dapui.close({})
 end
 
-dap.adapters.coreclr = {
-    type = "executable",
-    command = vim.fn.exepath("netcoredbg"),
-    args = { "--interpreter=vscode" },
-}
+local function pick(title, items, callback)
+    if #items == 0 then
+        vim.notify("Nothing found.", vim.log.levels.ERROR)
+        return
+    end
 
-if not dap.adapters["netcoredbg"] then
-    dap.adapters["netcoredbg"] = {
-        type = "executable",
-        command = vim.fn.exepath("netcoredbg"),
-        args = { "--interpreter=vscode" },
-    }
+    if #items == 1 then
+        callback(items[1])
+        return
+    end
+
+    pickers.new({}, {
+        prompt_title = title,
+        finder = finders.new_table({
+            results = items,
+            entry_maker = function(item)
+                return {
+                    value = item,
+                    display = vim.fn.fnamemodify(item, ":~:."),
+                    ordinal = item,
+                }
+            end,
+        }),
+        sorter = conf.generic_sorter({}),
+        attach_mappings = function(buf)
+            local function select()
+                local entry = action_state.get_selected_entry()
+                actions.close(buf)
+                if entry then callback(entry.value) end
+            end
+
+            actions.select_default:replace(select)
+            return true
+        end,
+    }):find()
+end
+
+local function find_dlls(csproj)
+    local dir = vim.fn.fnamemodify(csproj, ":h")
+    local name = vim.fn.fnamemodify(csproj, ":t:r")
+    local dlls = vim.fn.globpath(dir .. "/bin", "**/" .. name .. ".dll", false, true)
+
+    return dlls
+end
+
+local function debug(dll)
+    dap.run({
+        type = "coreclr",
+        name = "Launch .NET",
+        request = "launch",
+        program = dll,
+        cwd = vim.fn.fnamemodify(dll, ":h"),
+        stopAtEntry = false,
+        console = "integratedTerminal",
+    })
+end
+
+local function dotnet_debug()
+    local projects = vim.fn.globpath(
+        vim.fn.getcwd(),
+        "**/*.csproj",
+        false,
+        true
+    )
+
+    pick(".NET Projects", projects, function(csproj)
+        pick("Select DLL", find_dlls(csproj), debug)
+    end)
 end
 
 -- Define configurations for C#, F#, and VB
@@ -397,9 +523,11 @@ vim.keymap.set("n", "<leader>dB", function()
     dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 end)
 vim.keymap.set("n", "<leader>db", require("dap").toggle_breakpoint)
-vim.keymap.set("n", "<leader>dc", function()
-    dap.continue()
-end)
+
+vim.keymap.set("n", "<F5>", dotnet_debug, {
+    desc = "Debug .NET project",
+})
+
 vim.keymap.set("n", "<leader>da", function()
     dap.continue({ before = get_args })
 end)
@@ -409,7 +537,7 @@ end)
 vim.keymap.set("n", "<leader>dg", function()
     dap.goto_()
 end)
-vim.keymap.set("n", "<leader>di", function()
+vim.keymap.set("n", "<F11>", function()
     dap.step_into()
 end)
 vim.keymap.set("n", "<leader>dj", function()
@@ -424,7 +552,7 @@ end)
 vim.keymap.set("n", "<leader>do", function()
     dap.run_last()
 end)
-vim.keymap.set("n", "<leader>dO", function()
+vim.keymap.set("n", "<F10>", function()
     dap.step_over()
 end)
 vim.keymap.set("n", "<leader>dp", function()
@@ -532,7 +660,3 @@ vim.api.nvim_create_autocmd("BufWritePre", {
         require("conform").format({ bufnr = args.buf })
     end,
 })
-
--- Set up the theme
-vim.cmd("colorscheme habamax")
-vim.cmd("highlight ModeMsg ctermfg=10 guifg=#00ff00 guibg=NONE ctermbg=NONE")
