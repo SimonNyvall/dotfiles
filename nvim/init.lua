@@ -12,6 +12,10 @@ vim.o.relativenumber = true
 vim.opt.number = true
 vim.o.cursorline = true
 
+-- Set up fuzzy search
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
 -- Set up the theme
 vim.cmd("colorscheme habamax")
 vim.cmd("highlight ModeMsg ctermfg=10 guifg=#00ff00 guibg=NONE ctermbg=NONE")
