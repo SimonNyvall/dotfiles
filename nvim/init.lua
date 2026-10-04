@@ -152,6 +152,21 @@ local plugins = {
     {
         "echasnovski/mini.map",
     },
+    {
+        "max397574/startup.nvim",
+        dependencies = {
+            "nvim-telescope/telescope.nvim",
+            "nvim-lua/plenary.nvim",
+            "nvim-telescope/telescope-file-browser.nvim",
+        },
+        config = function()
+            local startup = require("startup")
+
+            startup.setup({
+                theme = "evil",
+            })
+        end,
+    },
 }
 
 require("lazy").setup(plugins, opts)
@@ -177,10 +192,19 @@ minimap.setup({
     },
 })
 
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+    callback = function(args)
+        vim.schedule(function()
+            if not vim.api.nvim_buf_is_valid(args.buf) then
+                return
+            end
 
-vim.api.nvim_create_autocmd("VimEnter", {
-    callback = function()
-        minimap.open()
+            if vim.bo[args.buf].filetype == "startup" then
+                minimap.close()
+            else
+                minimap.open()
+            end
+        end)
     end,
 })
 
@@ -199,6 +223,20 @@ require("nvim-treesitter").install({
 vim.api.nvim_create_autocmd("FileType", {
     callback = function(args)
         pcall(vim.treesitter.start, args.buf)
+    end,
+})
+
+vim.api.nvim_create_autocmd("BufEnter", {
+    callback = function(args)
+        vim.schedule(function()
+            if not vim.api.nvim_buf_is_valid(args.buf) then
+                return
+            end
+
+            vim.api.nvim_buf_call(args.buf, function()
+                vim.cmd("filetype detect")
+            end)
+        end)
     end,
 })
 
