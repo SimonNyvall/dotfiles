@@ -171,6 +171,67 @@ local plugins = {
             })
         end,
     },
+    {
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        ---@type Flash.Config
+        opts = {},
+        keys = {
+            {
+                "s",
+                mode = { "n", "x", "o" },
+                function()
+                    require("flash").jump()
+                end,
+                desc = "Flash"
+            },
+
+            {
+                "S",
+                mode = { "n", "x", "o" },
+                function()
+                    require("flash").treesitter()
+                end,
+                desc = "Flash Treesitter"
+            },
+
+            {
+                "r",
+                mode = "o",
+                function()
+                    require("flash").remote()
+                end,
+                desc = "Remote Flash"
+            },
+
+            {
+                "R",
+                mode = { "o", "x" },
+                function()
+                    require("flash").treesitter_search()
+                end,
+                desc = "Treesitter Search"
+            },
+
+            {
+                "<C-s>",
+                mode = "c",
+                function()
+                    require("flash").toggle()
+                end,
+                desc = "Toggle Flash Search"
+            },
+
+            {
+                "<leader>s",
+                mode = { "n", "x", "o" },
+                function()
+                    require("flash").jump()
+                end,
+                desc = "Flash Jump"
+            },
+        },
+    },
 }
 
 require("lazy").setup(plugins, opts)
@@ -436,19 +497,30 @@ end, { desc = "Clear harpoon" })
 local dap = require("dap")
 local dapui = require("dapui")
 
+local telescope = require("telescope")
+
 local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
 
 -- Add Mason executables to PATH
-vim.env.PATH = mason_bin .. (vim.fn.has("win32") == 1 and ";" or ":") .. vim.env.PATH
+vim.env.PATH = mason_bin
+    .. (vim.fn.has("win32") == 1 and ";" or ":")
+    .. vim.env.PATH
+
+-- ============================================================================
+-- netcoredbg
+-- ============================================================================
 
 local netcoredbg = vim.fn.exepath("netcoredbg")
 
 if netcoredbg == "" then
-    vim.notify("netcoredbg not found. Install it with :MasonInstall netcoredbg", vim.log.levels.ERROR)
+    vim.notify(
+        "netcoredbg not found. Install it with :MasonInstall netcoredbg",
+        vim.log.levels.ERROR
+    )
 else
     dap.adapters.coreclr = {
         type = "executable",
-        command = vim.fn.exepath("netcoredbg"),
+        command = netcoredbg,
         args = { "--interpreter=vscode" },
         options = {
             detached = false,
@@ -456,162 +528,326 @@ else
     }
 end
 
+-- ============================================================================
+-- DAP UI
+-- ============================================================================
+
 dap.listeners.after.event_initialized["dapui_config"] = function()
     dapui.open({})
 end
+
 dap.listeners.before.event_terminated["dapui_config"] = function()
     dapui.close({})
 end
+
 dap.listeners.before.event_exited["dapui_config"] = function()
     dapui.close({})
 end
 
-local function pick(title, items, callback)
-    if #items == 0 then
-        vim.notify("Nothing found.", vim.log.levels.ERROR)
-        return
+dapui.setup()
+
+-- ============================================================================
+-- Find solution/project root
+-- ============================================================================
+
+local function find_solution_root()
+    local cwd = vim.fn.getcwd()
+
+    -- First check the current directory
+    local solutions = vim.fn.globpath(cwd, "*.sln", false, true)
+    local slnx = vim.fn.globpath(cwd, "*.slnx", false, true)
+
+    if #solutions > 0 or #slnx > 0 then
+        return cwd
     end
 
-    if #items == 1 then
-        callback(items[1])
-        return
+    -- Then walk upwards from the current file
+    local file = vim.api.nvim_buf_get_name(0)
+
+    if file == "" then
+        return cwd
     end
 
-    pickers.new({}, {
-        prompt_title = title,
-        finder = finders.new_table({
-            results = items,
-            entry_maker = function(item)
-                return {
-                    value = item,
-                    display = vim.fn.fnamemodify(item, ":~:."),
-                    ordinal = item,
-                }
-            end,
-        }),
-        sorter = conf.generic_sorter({}),
-        attach_mappings = function(buf)
-            local function select()
-                local entry = action_state.get_selected_entry()
-                actions.close(buf)
-                if entry then callback(entry.value) end
-            end
+    local dir = vim.fn.fnamemodify(file, ":p:h")
 
-            actions.select_default:replace(select)
-            return true
-        end,
-    }):find()
+    while dir ~= "" do
+        local sln = vim.fn.globpath(dir, "*.sln", false, true)
+        local slnx_files = vim.fn.globpath(dir, "*.slnx", false, true)
+
+        if #sln > 0 or #slnx_files > 0 then
+            return dir
+        end
+
+        local parent = vim.fn.fnamemodify(dir, ":h")
+
+        if parent == dir then
+            break
+        end
+
+        dir = parent
+    end
+
+    return cwd
 end
 
-local function find_dlls(csproj)
-    local dir = vim.fn.fnamemodify(csproj, ":h")
-    local name = vim.fn.fnamemodify(csproj, ":t:r")
-    local dlls = vim.fn.globpath(dir .. "/bin", "**/" .. name .. ".dll", false, true)
+-- ============================================================================
+-- Find all projects in the solution
+-- ============================================================================
 
-    return dlls
-end
+local function find_projects()
+    local root = find_solution_root()
 
-local function debug(dll)
-    dap.run({
-        type = "coreclr",
-        name = "Launch .NET",
-        request = "launch",
-        program = dll,
-        cwd = vim.fn.fnamemodify(dll, ":h"),
-        stopAtEntry = false,
-        console = "integratedTerminal",
-    })
-end
-
-local function dotnet_debug()
-    local projects = vim.fn.globpath(
-        vim.fn.getcwd(),
+    return vim.fn.globpath(
+        root,
         "**/*.csproj",
         false,
         true
     )
-
-    pick(".NET Projects", projects, function(csproj)
-        pick("Select DLL", find_dlls(csproj), debug)
-    end)
 end
 
--- Define configurations for C#, F#, and VB
-local languages = { "cs", "fsharp", "vb" }
-for _, lang in ipairs(languages) do
-    if not dap.configurations[lang] then
-        dap.configurations[lang] = {
-            {
-                type = "netcoredbg",
-                name = "Launch " .. lang:upper(),
-                request = "launch",
-                program = function()
-                    return vim.fn.input("Path to " .. lang:upper() .. " dll: ", vim.fn.getcwd() .. "/", "file")
-                end,
-                cwd = "${workspaceFolder}",
-            },
-        }
+-- ============================================================================
+-- Find built DLLs for a project
+-- ============================================================================
+
+local function find_dlls(csproj)
+    local project_dir = vim.fn.fnamemodify(csproj, ":h")
+    local project_name = vim.fn.fnamemodify(csproj, ":t:r")
+
+    local dlls = vim.fn.globpath(
+        project_dir .. "/bin",
+        "**/" .. project_name .. ".dll",
+        false,
+        true
+    )
+
+    local result = {}
+
+    for _, dll in ipairs(dlls) do
+        if not dll:match("[\\/]ref[\\/]") then
+            table.insert(result, dll)
+        end
     end
+
+    return result
 end
 
-vim.keymap.set("n", "<leader>du", function()
-    dapui.toggle({})
-end)
-vim.keymap.set("n", "<leader>de", function()
-    dapui.eval()
-end)
+-- ============================================================================
+-- Start debugging a DLL
+-- ============================================================================
 
-vim.keymap.set("n", "<leader>dB", function()
-    dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-end)
-vim.keymap.set("n", "<leader>db", require("dap").toggle_breakpoint)
+local function debug_dll(dll)
+    dap.run({
+        type = "coreclr",
+        name = "Launch .NET",
+        request = "launch",
+
+        program = dll,
+
+        cwd = vim.fn.fnamemodify(dll, ":h"),
+
+        stopAtEntry = false,
+
+        console = "integratedTerminal",
+    })
+end
+
+-- ============================================================================
+-- Select DLL
+-- ============================================================================
+
+local function select_dll(csproj)
+    local dlls = find_dlls(csproj)
+
+    if #dlls == 0 then
+        vim.notify(
+            "No built DLL found. Build the project first.",
+            vim.log.levels.WARN
+        )
+        return
+    end
+
+    if #dlls == 1 then
+        debug_dll(dlls[1])
+        return
+    end
+
+    telescope.find_files({
+        prompt_title = "Select DLL to Debug",
+
+        cwd = vim.fn.fnamemodify(csproj, ":h") .. "/bin",
+
+        find_command = {
+            "fd",
+            "--type",
+            "f",
+            "--extension",
+            "dll",
+        },
+
+        attach_mappings = function(_, map)
+            map("i", "<CR>", function(prompt_bufnr)
+                local action_state = require("telescope.actions.state")
+                local actions = require("telescope.actions")
+
+                local entry = action_state.get_selected_entry()
+
+                actions.close(prompt_bufnr)
+
+                if entry then
+                    debug_dll(entry.path or entry.value)
+                end
+            end)
+
+            return true
+        end,
+    })
+end
+
+-- ============================================================================
+-- Select project
+-- ============================================================================
+
+local function dotnet_debug()
+    local projects = find_projects()
+
+    if #projects == 0 then
+        vim.notify(
+            "No .csproj files found in the solution.",
+            vim.log.levels.ERROR
+        )
+        return
+    end
+
+    -- Only one project -> skip the project picker
+    if #projects == 1 then
+        select_dll(projects[1])
+        return
+    end
+
+    require("telescope.pickers")
+        .new({}, {
+            prompt_title = "Select .NET Project",
+
+            finder = require("telescope.finders").new_table({
+                results = projects,
+
+                entry_maker = function(project)
+                    local display = vim.fn.fnamemodify(
+                        project,
+                        ":~:."
+                    )
+
+                    return {
+                        value = project,
+                        display = display,
+                        ordinal = display,
+                    }
+                end,
+            }),
+
+            sorter = require("telescope.config").values.generic_sorter({}),
+
+            attach_mappings = function(prompt_bufnr, map)
+                local actions = require("telescope.actions")
+                local action_state = require("telescope.actions.state")
+
+                local function select_project()
+                    local entry = action_state.get_selected_entry()
+
+                    actions.close(prompt_bufnr)
+
+                    if entry then
+                        select_dll(entry.value)
+                    end
+                end
+
+                actions.select_default:replace(select_project)
+
+                map("i", "<CR>", select_project)
+
+                return true
+            end,
+        })
+        :find()
+end
+
+-- ============================================================================
+-- F5 = select project -> select DLL -> debug
+-- ============================================================================
 
 vim.keymap.set("n", "<F5>", dotnet_debug, {
     desc = "Debug .NET project",
 })
 
+-- ============================================================================
+-- DAP keymaps
+-- ============================================================================
+
+vim.keymap.set("n", "<leader>du", function()
+    dapui.toggle({})
+end, { desc = "Toggle DAP UI" })
+
+vim.keymap.set("n", "<leader>de", function()
+    dapui.eval()
+end, { desc = "DAP Eval" })
+
+vim.keymap.set("n", "<leader>dB", function()
+    dap.set_breakpoint(
+        vim.fn.input("Breakpoint condition: ")
+    )
+end, { desc = "Conditional breakpoint" })
+
+vim.keymap.set("n", "<leader>db", function()
+    dap.toggle_breakpoint()
+end, { desc = "Toggle breakpoint" })
+
 vim.keymap.set("n", "<leader>da", function()
-    dap.continue({ before = get_args })
-end)
+    dap.continue()
+end, { desc = "Continue" })
+
 vim.keymap.set("n", "<leader>dC", function()
     dap.run_to_cursor()
-end)
-vim.keymap.set("n", "<leader>dg", function()
-    dap.goto_()
-end)
+end, { desc = "Run to cursor" })
+
 vim.keymap.set("n", "<F11>", function()
     dap.step_into()
-end)
+end, { desc = "Step into" })
+
 vim.keymap.set("n", "<leader>dj", function()
     dap.down()
-end)
+end, { desc = "Down stack frame" })
+
 vim.keymap.set("n", "<leader>dk", function()
     dap.up()
-end)
+end, { desc = "Up stack frame" })
+
 vim.keymap.set("n", "<leader>dl", function()
     dap.run_last()
-end)
-vim.keymap.set("n", "<leader>do", function()
-    dap.run_last()
-end)
+end, { desc = "Run last" })
+
 vim.keymap.set("n", "<F10>", function()
     dap.step_over()
-end)
+end, { desc = "Step over" })
+
 vim.keymap.set("n", "<leader>dp", function()
     dap.pause()
-end)
+end, { desc = "Pause" })
+
 vim.keymap.set("n", "<leader>dr", function()
     dap.repl.toggle()
-end)
+end, { desc = "Toggle REPL" })
+
 vim.keymap.set("n", "<leader>ds", function()
     dap.session()
-end)
+end, { desc = "DAP session" })
+
 vim.keymap.set("n", "<leader>dt", function()
     dap.terminate()
-end)
+end, { desc = "Terminate" })
+
 vim.keymap.set("n", "<leader>dw", function()
     require("dap.ui.widgets").hover()
-end)
+end, { desc = "DAP hover" })
 
 dapui.setup()
 
