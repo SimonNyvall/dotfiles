@@ -1,7 +1,7 @@
 ---@diagnostic disable: redefined-local
 ---@diagnostic disable: undefined-global
 vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>")
 
 vim.opt.clipboard:append("unnamedplus")
 
@@ -46,6 +46,15 @@ vim.diagnostic.config({
     update_in_insert = true,
     signs = false,
     underline = true
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "typescript", "yaml", "json", "html", "css", "scss", "javascript" },
+    callback = function()
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.tabstop = 2
+        vim.opt_local.softtabstop = 2
+    end
 })
 
 -- Set up general keymaps
@@ -183,6 +192,14 @@ local plugins = {
             { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
             { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
         },
+    },
+    {
+        "stevearc/oil.nvim",
+        ---@module 'oil'
+        ---@type oil.SetupOpts
+        opts = {},
+        dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+        lazy = false
     }
 }
 
@@ -275,12 +292,15 @@ require("mason-lspconfig").setup({
         "lua_ls",
         "clangd",
         "roslyn_ls",
-        "ts_ls",
     },
 })
 
 -- Set up LSP
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
+capabilities.workspace = capabilities.workspace or {}
+capabilities.workspace.didChangeWatchedFiled = {
+    dynamicRegistration = true,
+}
 
 -- Lua
 vim.lsp.config("lua_ls", {
@@ -302,6 +322,85 @@ vim.lsp.config("lua_ls", {
             },
         },
     },
+})
+
+-- C#
+vim.lsp.config("roslyn_ls", {
+    capabilities = capabilities
+})
+
+local function restart_lsp_client(name)
+    local clients = vim.lsp.get_clients({ name = name })
+
+    if vim.tbl_isempty(clients) then
+        return
+    end
+
+    local bufs = {}
+    for _, client in ipairs(clients) do
+        for _, buf in ipairs(vim.lsp.get_buffers_by_client_id(client.id)) do
+            bufs[buf] = true
+        end
+    end
+
+    local timer = vim.uv.new_timer()
+    timer:start(
+        50,
+        50,
+        vim.schedule_wrap(function()
+            if not vim.tbl_isempty(vim.lsp.get_clients({ name = name })) then
+                return
+            end
+
+            timer:stop()
+            timer:close()
+
+            for buf in pairs(bufs) do
+                if vim.api.nvim_buf_is_valid(buf) then
+                    vim.api.nvim_buf_call(buf, function()
+                        vim.cmd("doautocmd FileType")
+                    end)
+                end
+            end
+        end)
+    )
+end
+
+vim.api.nvim_create_user_command("LspRestart", function(opts)
+    if opts.args ~= "" then
+        restart_lsp_client(opts.args)
+        return
+    end
+
+    local seen = {}
+
+    for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+        seen[client.name] = true
+    end
+
+    for name in pairs(seen) do
+        restart_lsp_client(name)
+    end
+end, { nargs = "?", desc = "Restart LSP client(s) by name" })
+
+vim.api.nvim_create_autocmd("User", {
+    pattern = "oilActionsPost",
+    callback = function(args)
+        if args.data.err then
+            return
+        end
+
+        for _, action in ipairs(args.data.actions) do
+            if action.type == "create" and action.entry_type == "file" then
+                local _, path = require("oil.util").parse_url(action.url)
+
+                if path and path:match("%.cs$") then
+                    vim.notify("New C# file detected, restarting roslyn_ls", vim.log.levles.INFO)
+                    return
+                end
+            end
+        end
+    end
 })
 
 -- C / C++
@@ -869,14 +968,22 @@ local conform = require("conform")
 conform.setup({
     formatters_by_ft = {
         lua = { "stylua" },
-        csharp = { "csharpier" },
-        html = { "prettier" },
-        javascript = { "prettier" },
-        typescript = { "prettier" },
+        cs = { "csharpier" },
+        html = { "oxlint" },
+        javascript = { "oxlint" },
+        typescript = { "oxlint" },
+        typescriptreact = { "oxlint" },
         css = { "prettier" },
         markdown = { "prettier" },
         fsharp = { "fantomas" },
         ["_"] = { "trim_whitespace" },
+    },
+    formatters = {
+        oxfmt = {
+            command = "oxfmt",
+            args = { "$FILENAME" },
+            stdin = false
+        }
     },
     format_on_save = {
         lsp_fallback = true,
