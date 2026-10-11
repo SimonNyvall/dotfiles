@@ -49,12 +49,12 @@ vim.diagnostic.config({
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "typescript", "yaml", "json", "html", "css", "scss", "javascript" },
+    pattern = { "typescript", "typescriptreact", "yaml", "json", "html", "css", "scss", "javascript" },
     callback = function()
         vim.opt_local.shiftwidth = 2
         vim.opt_local.tabstop = 2
         vim.opt_local.softtabstop = 2
-    end
+    end,
 })
 
 -- Set up general keymaps
@@ -298,7 +298,7 @@ require("mason-lspconfig").setup({
 -- Set up LSP
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 capabilities.workspace = capabilities.workspace or {}
-capabilities.workspace.didChangeWatchedFiled = {
+capabilities.workspace.didChangeWatchedFiles = {
     dynamicRegistration = true,
 }
 
@@ -326,7 +326,7 @@ vim.lsp.config("lua_ls", {
 
 -- C#
 vim.lsp.config("roslyn_ls", {
-    capabilities = capabilities
+    capabilities = capabilities,
 })
 
 local function restart_lsp_client(name)
@@ -341,6 +341,7 @@ local function restart_lsp_client(name)
         for _, buf in ipairs(vim.lsp.get_buffers_by_client_id(client.id)) do
             bufs[buf] = true
         end
+        client:stop(true)
     end
 
     local timer = vim.uv.new_timer()
@@ -384,7 +385,7 @@ vim.api.nvim_create_user_command("LspRestart", function(opts)
 end, { nargs = "?", desc = "Restart LSP client(s) by name" })
 
 vim.api.nvim_create_autocmd("User", {
-    pattern = "oilActionsPost",
+    pattern = "OilActionsPost",
     callback = function(args)
         if args.data.err then
             return
@@ -396,6 +397,8 @@ vim.api.nvim_create_autocmd("User", {
 
                 if path and path:match("%.cs$") then
                     vim.notify("New C# file detected, restarting roslyn_ls", vim.log.levles.INFO)
+                    restart_lsp_client("roslyn_ls")
+                    break
                     return
                 end
             end
@@ -969,12 +972,12 @@ conform.setup({
     formatters_by_ft = {
         lua = { "stylua" },
         cs = { "csharpier" },
-        html = { "oxlint" },
-        javascript = { "oxlint" },
-        typescript = { "oxlint" },
-        typescriptreact = { "oxlint" },
-        css = { "prettier" },
-        markdown = { "prettier" },
+        html = { "oxfmt" },
+        javascript = { "oxfmt" },
+        typescript = { "oxfmt" },
+        typescriptreact = { "oxfmt" },
+        css = { "oxfmt" },
+        markdown = { "oxfmt" },
         fsharp = { "fantomas" },
         ["_"] = { "trim_whitespace" },
     },
