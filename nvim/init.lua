@@ -396,7 +396,7 @@ vim.api.nvim_create_autocmd("User", {
                 local _, path = require("oil.util").parse_url(action.url)
 
                 if path and path:match("%.cs$") then
-                    vim.notify("New C# file detected, restarting roslyn_ls", vim.log.levles.INFO)
+                    vim.notify("New C# file detected, restarting roslyn_ls...", vim.log.levels.INFO)
                     restart_lsp_client("roslyn_ls")
                     break
                 end
