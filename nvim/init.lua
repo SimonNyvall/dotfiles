@@ -399,7 +399,6 @@ vim.api.nvim_create_autocmd("User", {
                     vim.notify("New C# file detected, restarting roslyn_ls", vim.log.levles.INFO)
                     restart_lsp_client("roslyn_ls")
                     break
-                    return
                 end
             end
         end
