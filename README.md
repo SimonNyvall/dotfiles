@@ -1,11 +1,17 @@
-# dotfiles
+# 🛠️ dotfiles
 
-Setup new machines with just one command.
+The configs that make my machine feel like mine.
 
-Asks what files should be sourced and whether you want to install tmux/vim configuration by symlinking.
+## 🧩 What's inside?
+| Area     | Tool & configs                             |
+| -------- | ------------------------------------------ |
+| System   | i3, window management                      |
+| Terminal | Bash, PowerShell, tmux, Starship & friends |
+| AI       | Agents, skills & workflows                 |
+| Editors  | Neovim, VS Code                            |
 
-    git clone https://github.com/SimonNyvall/dotfiles.git .dotfiles
-    cd .dotfiles
-    ./install.sh
+## ⚙️ The idea
 
-xmodmap ~/.Xmodmap
+One place for my configs, my preferences, and the little things that make my workflow feel right.
+
+Always tweaking. Always tinkering. Probably changing something as you read this.
